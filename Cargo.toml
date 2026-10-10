@@ -67,6 +67,9 @@ base64 = "0.22"
 # Low-level syscalls (privilege dropping in the root pacman hook)
 libc = "0.2"
 
+#yara
+yara-x = "1.21.0"
+
 # Internal crates
 aur-scanner-core = { version = "2.2.0", path = "crates/aur-scanner-core" }
 

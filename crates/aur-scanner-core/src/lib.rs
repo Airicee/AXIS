@@ -15,6 +15,7 @@ pub mod elf;
 pub mod error;
 pub mod history;
 pub mod neturl;
+pub mod normalizer;
 pub mod overlay;
 pub mod parser;
 pub mod pkgfiles;
@@ -28,6 +29,7 @@ pub mod textutil;
 pub mod threat_intel;
 pub mod types;
 pub mod validate;
+pub mod yara_engine;
 
 pub use error::{ParseError, Result, ScanError};
 pub use pkgfiles::read_text_capped;
@@ -253,6 +255,13 @@ impl Scanner {
                     )));
                 }
             }
+        }
+        // Integrasi Engine YARA-X + De-obfuscation Normalizer
+        let yara_engine = yara_engine::YaraAuditEngine::new();
+        let yara_hits = yara_engine.scan_as_findings(&content, &path.to_string_lossy());
+        if !yara_hits.is_empty() {
+            info!("YARA-X Engine detected {} malicious pattern(s)", yara_hits.len());
+            findings.extend(yara_hits);
         }
 
         // NOTE: no severity filtering here. `min_severity` is a DISPLAY
