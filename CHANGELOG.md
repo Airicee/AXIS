@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Changed (yipyip / AXIS)
+
+- **YARA-X rules are no longer a string inside `yara_engine.rs`.** The built-in
+  rules live in `crates/aur-scanner-core/src/yara_rules/builtin.yar` and extra
+  `*.yar` / `*.yara` files are loaded from the `rules.d` directories and the
+  configured `rules_path`, under the same policy as TOML rules: a file that does
+  not compile, lacks a valid `severity`, is a symlink, is oversized, or re-uses
+  an existing rule id is skipped with a warning, and an external rule can never
+  replace a built-in. See `docs/yara-rules.md`.
+- **Rules are compiled once per scanner**, not once per scanned file. The
+  normalizer's regexes are likewise compiled once per process.
+- YARA findings now report their origin in `metadata.source`, and honour the
+  optional `recommendation` and `cwe` rule meta.
+
 ## [2.2.0] - 2026-10-02
 
 Stable release of the 2.2.0 line: everything in rc.1 and rc.2 below, plus the

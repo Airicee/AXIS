@@ -1,5 +1,12 @@
 use base64::prelude::*;
 use regex::Regex;
+use std::sync::LazyLock;
+
+/// Compiled once per process, not once per scanned file.
+static B64_INLINE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"echo\s+["']([A-Za-z0-9+/=]{8,})["']\s*\|\s*base64\s+-d"#).expect("static regex"));
+static PROC_SUBSTITUTION: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"(?:ba)?sh\s+<\s*<\((curl[^)]+)\)"#).expect("static regex"));
 
 #[derive(Debug, Clone)]
 pub struct NormalizedBuffer {
@@ -18,7 +25,7 @@ impl ScriptNormalizer {
 
         // 1. Deteksi dan auto-decode Base64 inline
         // Contoh: echo "BASE64" | base64 -d
-        let b64_regex = Regex::new(r#"echo\s+["']([A-Za-z0-9+/=]{8,})["']\s*\|\s*base64\s+-d"#).unwrap();
+        let b64_regex = &*B64_INLINE;
         for cap in b64_regex.captures_iter(content) {
             if let Some(b64_str) = cap.get(1) {
                 if let Ok(decoded_bytes) = BASE64_STANDARD.decode(b64_str.as_str()) {
@@ -32,7 +39,7 @@ impl ScriptNormalizer {
 
         // 2. Syntax Flattening: Process Substitution ke Pipe standar
         // Mengubah `bash < <(curl ...)` menjadi `curl ... | bash`
-        let proc_sub_regex = Regex::new(r#"(?:ba)?sh\s+<\s*<\((curl[^)]+)\)"#).unwrap();
+        let proc_sub_regex = &*PROC_SUBSTITUTION;
         normalized = proc_sub_regex.replace_all(&normalized, "$1 | bash").to_string();
 
         NormalizedBuffer {

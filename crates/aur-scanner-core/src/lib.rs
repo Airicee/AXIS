@@ -58,6 +58,8 @@ pub struct Scanner {
     parser: Box<dyn PkgbuildParser>,
     rule_engine: Arc<RuleEngine>,
     ioc_db: Arc<IocDatabase>,
+    /// YARA-X rules, compiled once here and shared by every scan.
+    yara_engine: Arc<yara_engine::YaraAuditEngine>,
     config: ScanConfig,
 }
 
@@ -83,6 +85,13 @@ impl Scanner {
         }
         let rule_engine = Arc::new(engine);
         let ioc_db = Arc::new(IocDatabase::try_load()?);
+
+        // Built-in YARA-X rules plus *.yar files from the same rules.d dirs (and
+        // the configured rules_path), compiled ONCE for the life of the scanner.
+        let yara_engine = Arc::new(yara_engine::YaraAuditEngine::load(
+            &rules::user_rule_dirs(),
+            config.rules_path.as_deref(),
+        )?);
 
         let mut analyzers: Vec<Arc<dyn SecurityAnalyzer>> = vec![
             Arc::new(analyzer::PatternAnalyzer::new(rule_engine.clone())),
@@ -120,6 +129,7 @@ impl Scanner {
             parser,
             rule_engine,
             ioc_db,
+            yara_engine,
             config,
         })
     }
@@ -266,8 +276,9 @@ impl Scanner {
             }
         }
         // Integrasi Engine YARA-X + De-obfuscation Normalizer
-        let yara_engine = yara_engine::YaraAuditEngine::new();
-        let yara_hits = yara_engine.scan_as_findings(&content, &path.to_string_lossy());
+        let yara_hits = self
+            .yara_engine
+            .scan_as_findings(&content, &path.to_string_lossy());
         if !yara_hits.is_empty() {
             info!("YARA-X Engine detected {} malicious pattern(s)", yara_hits.len());
             findings.extend(yara_hits);
