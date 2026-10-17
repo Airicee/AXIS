@@ -11,15 +11,18 @@ members = [
 version = "2.2.0"
 edition = "2021"
 rust-version = "1.85"
-authors = ["Kief Studio <packages@kief.studio>"]
+authors = [
+    "Kief Studio <packages@kief.studio>",
+    "AXIS Team",
+]
 license = "GPL-3.0-or-later"
 repository = "https://github.com/KiefStudioMA/ks-aur-scanner"
 homepage = "https://aur-scanner.kief.studio"
 documentation = "https://aur-scanner.kief.studio"
 readme = "README.md"
-keywords = ["aur", "arch-linux", "security", "malware-detection", "pkgbuild"]
+keywords = ["aur", "arch-linux", "security", "malware-detection", "pkgbuild", "yara-x"]
 categories = ["command-line-utilities", "development-tools"]
-description = "Security scanner for Arch Linux AUR packages"
+description = "yipyip - Security scanner for Arch Linux AUR packages with YARA-X and AST normalizer"
 
 [workspace.dependencies]
 # Async runtime

@@ -1,3 +1,12 @@
+//! # yipyip Security Engine (AXIS Project)
+//!
+//! Based on ks-aur-scanner (c) original authors.
+//! Modified and extended by AXIS Team (2026):
+//! - Added AST Script Normalizer for evasion de-obfuscation
+//! - Integrated native YARA-X rules inspection engine
+//!
+//! Licensed under GNU General Public License v3.0 (GPLv3).
+
 //! AUR Security Scanner Core Library
 //!
 //! Provides security analysis capabilities for Arch Linux AUR packages.

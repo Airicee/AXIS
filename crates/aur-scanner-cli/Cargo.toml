@@ -1,5 +1,5 @@
 [package]
-name = "aur-scanner-cli"
+name = "yipyip-cli"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,11 +10,11 @@ homepage.workspace = true
 documentation.workspace = true
 keywords.workspace = true
 categories.workspace = true
-description = "CLI tool for AUR package security scanning - detect malicious PKGBUILDs before installation"
+description = "CLI for yipyip - AUR Security Scanner with YARA-X Engine detect malicious PKGBUILDs before installation"
 readme = "../../README.md"
 
 [[bin]]
-name = "aur-scan"
+name = "yipyip"
 path = "src/main.rs"
 
 [dependencies]

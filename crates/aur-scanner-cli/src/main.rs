@@ -14,10 +14,13 @@ use tracing_subscriber::EnvFilter;
 use aur_scanner_core::{ScanConfig, Severity};
 
 #[derive(Parser)]
-#[command(name = "aur-scan")]
-#[command(author = "Kief Studio")]
+#[command(name = "yipyip")]
+#[command(author = "AXIS Team for project (based on ks-aur-scanner by Kief Studio)")]
 #[command(version)]
-#[command(about = "Security scanner for AUR packages", long_about = None)]
+#[command(
+    about = "yipyip - Security scanner for AUR packages with YARA-X and AST normalizer",
+    long_about = "yipyip is an extended AUR security analysis tool developed by AXIS Team, integrating native YARA-X rule inspection and script de-obfuscation."
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
